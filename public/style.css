@@ -1,0 +1,215 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+*, *:before, *:after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html, body {
+    width: 100%;
+}
+:root {
+    --yellow: #FCE91B;
+    --black: #0E0E0D;
+    --white: #FFFFFF;
+}
+@font-face {
+    font-family: 'Monaspace Neon';
+    src: url('MonaspaceNeon-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+h1, h2, h3, h4, h5, h6, span, p, li, button, .button, input, textarea {
+    font-family: 'Monaspace Neon', monospace;
+    letter-spacing: -1.35px;
+    font-weight: bold;
+    text-transform: lowercase;
+    font-size: 18px;
+    text-align: center;
+    word-break: break-word;
+}
+ul, li {
+    list-style-type: none;
+}
+button, .button {
+    display: block;
+    background-color: var(--yellow);
+    border: solid 2px var(--black);
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    color: var(--black);
+    text-decoration: none;
+}
+.alt-button {
+    background-color: var(--white);
+}
+.hr {
+    width: 100%;
+    height: 2px;
+    background-color: var(--black);
+}
+
+main {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 35px auto auto auto;
+    width: 90%;
+    max-width: 550px;
+    gap: 40px;
+}
+#logo {
+    height: 50px;
+}
+
+
+#network, #messages-file, #messages {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 20px;
+    width: 100%;
+}
+#network {
+    flex-wrap: nowrap;
+
+    > div {
+        width: 50%;
+    }
+
+    > div:first-of-type {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+
+        > #room-address {
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+            padding: 10px 20px 5px 20px;
+            background-color: var(--white);
+            border: solid 2px var(--black);
+            border-radius: 10px;
+        }
+    }
+
+    > div:last-of-type > ul#connected {
+        display: flex;
+        flex-flow: column nowrap;
+        margin: 10px;
+
+        > li.connected-device {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            list-style-type: none;
+            width: 100%;
+            gap: 10px;
+
+            > div {
+                flex: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--white);
+                margin-bottom: 5px;
+                width: 30px;
+                height: 30px;
+                border-radius: 1000px;
+                border: solid 2px var(--black);
+
+                > span {
+                    font-size: 15px;
+                }
+            }
+
+            > span {
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                text-align: left;
+            }
+        }
+    }
+}
+
+#contents {
+    > ul {
+        display: flex;
+        flex-flow: row wrap;
+        gap: 10px;
+
+        > li {
+            display: flex;
+            flex-flow: column nowrap;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            padding: 10px;
+            gap: 10px;
+            border: solid 2px var(--black);
+            border-radius: 10px;
+            width: 100%;
+            height: 100%;
+
+            &#no-content {
+                padding: 30px;
+                color: color-mix(in srgb, currentColor 35%, transparent);
+            }
+
+            > div {
+                display: flex;
+                flex-flow: row nowrap;
+                gap: 10px;
+                width: 100%;
+
+                > button:last-of-type {
+                    width: fit-content;
+                }
+            }
+
+            > .file-content-img {
+                max-height: 250px;
+                max-width: 100%;
+                border-radius: 10px;
+            }
+
+            > iframe {
+                width: 100%;
+                height: 250px;
+                border-radius: 10px;
+            }
+        }
+    }
+}
+
+#form {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 20px;
+    width: 100%;
+    background-color: var(--white);
+    padding: 10px;
+    border: solid 2px var(--black);
+    border-radius: 10px;
+}
+textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100px;
+    border: solid 2px var(--black);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: left;
+}

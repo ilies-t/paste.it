@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>paste.it - share files between devices</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/favicon.ico" />
+</head>
+<body>
+    <main>
+        <img id="logo" src="/logo.svg" alt="Logo">
+        <div id="network">
+            <div>
+                <span>your network is:</span>
+                <span id="room-address">Loading...</span>
+            </div>
+            <div>
+                <h3>connected:</h3>
+                <ul id="connected"></ul>
+            </div>
+        </div>
+        <div class="hr"></div>
+        <div id="contents">
+            <ul></ul>
+        </div>
+        <div id="messages">
+            <form id="form" action="">
+                <textarea id="input" autocomplete="off"></textarea>
+                <button onclick="handleSubmitText">Share text</button>
+                <h3>Or</h3>
+                <input id="input-file" type="file" onchange="upload(this.files)" hidden/>
+                <label for="input-file" class="button">+ upload file</label>
+            </form>
+        </div>
+        <footer>
+
+        </footer>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const connected = document.getElementById('connected');
+        const contents = document.querySelector('#contents > ul');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+
+        form.addEventListener('dragover', (e) => preventDefaults(e));
+        form.addEventListener('dragenter', (e) => preventDefaults(e));
+        form.addEventListener('dragleave', (e) => preventDefaults(e));
+        form.addEventListener('submit', (e) => handleSubmitText(e));
+        form.addEventListener('drop', (e) => {
+            preventDefaults(e);
+            upload(e.dataTransfer.files);
+        });
+
+        socket.on('message', function(texts) {
+            addTexts(texts);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+        socket.on('refreshFiles', function(files) {
+            addFiles(files);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+        socket.on('connected', function(roomData) {
+            addConnected(roomData.usersInRoom);
+            addTexts(roomData.sharedContents?.texts);
+            addFiles(roomData.sharedContents?.files);
+            addIpAddress(roomData.room);
+            window.scrollTo(0, 0);
+        });
+        socket.on('deleteContent', function(id) {
+            removeContent(id);
+        });
+        socket.on('disconnected', function(socketId) {
+            const item = document.querySelector(`li#${getIdName(socketId)}`);
+            if (item) {
+                item.remove();
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        });
+
+        const preventDefaults = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        const handleSubmitText = (e) => {
+            preventDefaults(e);
+            if (input.value) {
+                socket.emit('message', input.value);
+                input.value = '';
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        }
+
+        const upload = (files) => {
+            const fileToUpload = {
+                content: files[0],
+                type: files[0].type,
+                name: files[0].name
+            }
+            socket.emit("upload", fileToUpload, (status) => {
+                console.log(status);
+            });
+        }
+
+        const getIdName = (id) => {
+            return `id-${id}`;
+        };
+
+        const addConnected = (usersInRoom) => {
+            usersInRoom.forEach(device => {
+                if (document.querySelector(`li#${getIdName(device.id)}`)) {
+                    return;
+                }
+                const item = document.createElement('li');
+                item.className = 'connected-device';
+                item.id = getIdName(device.id);
+                const itemAvatar = document.createElement('span');
+                itemAvatar.textContent = device.device.substring(0, 1);
+                const itemAvatarBg = document.createElement('div');
+                itemAvatarBg.appendChild(itemAvatar);
+                item.appendChild(itemAvatarBg);
+                const itemText = document.createElement('span');
+                itemText.textContent = device.id === socket.id ? `(You) ${device.device}` : device.device;
+                item.appendChild(itemText);
+                connected.appendChild(item);
+            });
+        };
+
+        const addTexts = (texts) => {
+            if (!texts) {
+                return;
+            }
+            const items = [];
+            texts.forEach(text => {
+                const id = getIdName(text.id);
+                const doc = document.querySelector(`#${id}`);
+                if (doc) {
+                    return;
+                }
+                const item = document.createElement('li');
+                item.id = id;
+
+                const buttons = document.createElement('div');
+                const copyButton = document.createElement('button');
+                copyButton.className = 'alt-button';
+                copyButton.textContent = 'Copy';
+                copyButton.addEventListener('click', () => {
+                    copyToClipboard(text.content);
+                });
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'alt-button';
+                deleteButton.textContent = 'x';
+                deleteButton.addEventListener('click', () => {
+                    socket.emit('delete', text.id);
+                });
+                buttons.appendChild(copyButton);
+                buttons.appendChild(deleteButton);
+
+                const textContent = document.createElement('span');
+                textContent.textContent = text.content;
+
+                item.appendChild(textContent);
+                item.appendChild(buttons);
+                items.push(item);
+            });
+            items.forEach(item => {
+                contents.appendChild(item);
+            });
+        }
+
+        const addFiles = (files) => {
+            if (!files) {
+                return;
+            }
+            const items = [];
+            files.forEach(file => {
+                const id = getIdName(file.id);
+                const doc = document.querySelector(`#${id}`);
+                if (doc) {
+                    return;
+                }
+                const item = document.createElement('li');
+                item.id = id;
+
+                const b64 = `data:${file.type};base64,` + file.base64;
+
+                const buttons = document.createElement('div');
+                const downloadButton = document.createElement('a');
+                downloadButton.className = 'button alt-button';
+                downloadButton.textContent = 'download';
+                downloadButton.download = file.name;
+                downloadButton.href = b64;
+                downloadButton.target = '_blank';
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'alt-button';
+                deleteButton.textContent = 'x';
+                deleteButton.addEventListener('click', () => {
+                    socket.emit('delete', file.id);
+                });
+                buttons.appendChild(downloadButton);
+                buttons.appendChild(deleteButton);
+
+                let subFileContent;
+                const title = document.createElement('h3');
+                title.textContent = file.name;
+                if (file.type.startsWith("image")) {
+                    subFileContent = document.createElement('img');
+                    subFileContent.className = 'file-content-img';
+                    subFileContent.src = b64;
+                    item.appendChild(subFileContent);
+                }
+                if (file.type.startsWith("application") && !file.type.startsWith("application/x-zip")) {
+                    subFileContent = document.createElement('iframe');
+                    subFileContent.src = b64;
+                    item.appendChild(subFileContent);
+                }
+
+                item.appendChild(title);
+                item.appendChild(buttons);
+                items.push(item);
+            });
+            items.forEach(item => {
+                contents.appendChild(item);
+            });
+        };
+
+        const addIpAddress = (roomAddress) => {
+            const roomAddressDOMBlock = document.querySelector('#room-address');
+            if (roomAddressDOMBlock.textContent !== 'Loading...') {
+                return;
+            }
+            roomAddressDOMBlock.textContent = roomAddress;
+        };
+
+        const removeContent = (id) => {
+            const docId = getIdName(id);
+            const doc = document.querySelector(`#${docId}`);
+            if (doc) {
+                doc.remove();
+            }
+        };
+
+        // https://codepen.io/jakefreeberg/pen/OJMbvKW
+        const copyToClipboard = (text) =>  {
+            const aux = document.createElement("input");
+            aux.setAttribute("value", text);
+            document.body.appendChild(aux);
+            aux.select();
+            document.execCommand("copy");
+            document.body.removeChild(aux);
+        }
+    </script>
+</body>
+</html>
