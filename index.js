@@ -19,7 +19,7 @@ app.get('/MonaspaceNeon-Bold.woff2', function(req, res) { res.sendFile(__dirname
 app.get('/', (req, res) => { res.sendFile(__dirname + '/public/index.html'); });
 
 io.on('connection', (socket) => {
-    const ipAddress = isProductionEnv() ? socket.request.connection.remoteAddress : '127.0.0.1';
+    const ipAddress = isProductionEnv() ? socket.handshake.address : '127.0.0.1';
     socket.join(ipAddress);
     const device = getDeviceName(socket.request.headers['user-agent']);
     socket.device = device;
@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, hostname, () => {
-    console.log(`Paste-it listening on ${hostname}:${port}`)
+    console.log(`Paste-it (production=${isProductionEnv()}, NODE_ENV=${process.env.NODE_ENV}) listening on ${hostname}:${port}`)
 });
 
 const getDeviceName = (uaHeader) => {
