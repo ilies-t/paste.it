@@ -19,7 +19,7 @@ app.get('/MonaspaceNeon-Bold.woff2', function(req, res) { res.sendFile(__dirname
 app.get('/', (req, res) => { res.sendFile(__dirname + '/public/index.html'); });
 
 io.on('connection', (socket) => {
-    const ipAddress = isProductionEnv() ? socket.handshake.address : '127.0.0.1';
+    const ipAddress = isProductionEnv() ? extractIpAddress(socket) : 'local';
     socket.join(ipAddress);
     const device = getDeviceName(socket.request.headers['user-agent']);
     socket.device = device;
@@ -108,6 +108,12 @@ const getDeviceName = (uaHeader) => {
 const isProductionEnv = () => {
     return process.env.NODE_ENV === 'production';
 };
+const extractIpAddress = (socket) => {
+    if (socket.handshake.headers["x-forwarded-for"]) {
+        return socket.handshake.headers["x-forwarded-for"].split(",")[0];
+    }
+    return socket.handshake.address;
+}
 
 class Database {
     static get(ipAddress) {
