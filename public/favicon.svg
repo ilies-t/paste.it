@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="250" height="250"><svg width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="250" height="250" rx="20" fill="white"></rect>
+<ellipse cx="147.5" cy="135.5" rx="52.5" ry="44.5" fill="#FCE91B"></ellipse>
+<rect x="75" y="53" width="40" height="20" fill="#0E0E0D"></rect>
+<rect x="135" y="53" width="40" height="20" fill="#0E0E0D"></rect>
+<rect x="175" y="53" width="40" height="20" transform="rotate(90 175 53)" fill="#0E0E0D"></rect>
+<rect x="175" y="113" width="40" height="20" transform="rotate(90 175 113)" fill="#0E0E0D"></rect>
+<rect x="135" y="138" width="40" height="20" fill="#0E0E0D"></rect>
+<rect x="75" y="138" width="40" height="20" fill="#0E0E0D"></rect>
+<rect x="75" y="197" width="84" height="20" transform="rotate(-90 75 197)" fill="#0E0E0D"></rect>
+<rect x="75" y="93" width="40" height="20" transform="rotate(-90 75 93)" fill="#0E0E0D"></rect>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

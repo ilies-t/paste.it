@@ -3,6 +3,18 @@ Paste.it is a simple file sharing service that allows you to share files between
 For example, if you want to share text or file between your laptop and mobile.<br/>
 Each file maximum size is 50MB.
 
+### Screenshots
+<table>
+  <tr>
+    <td>Desktop (Windows)</td>
+    <td>Mobile (iPhone)</td>
+  </tr>
+  <tr>
+    <td><img src="./docs/desktop.png" width="100%"></td>
+    <td><img src="./docs/mobile.png" width="50%"></td>
+  </tr>
+ </table>
+
 ## Getting Started
 Required environment variables:
 

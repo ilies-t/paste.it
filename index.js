@@ -12,14 +12,27 @@ const UAParser = require('ua-parser-js');
 const { randomUUID } = require("crypto");
 const db = new Map();
 
-app.get('/favicon.ico', function(req, res) { res.sendFile(__dirname + "/public/favicon.ico"); });
-app.get('/style.css', function(req, res) { res.sendFile(__dirname + "/public/style.css"); });
-app.get('/logo.svg', function(req, res) { res.sendFile(__dirname + "/public/logo.svg"); });
-app.get('/MonaspaceNeon-Bold.woff2', function(req, res) { res.sendFile(__dirname + "/public/MonaspaceNeon-Bold.woff2"); });
+const publicFilesToShare = [
+    'apple-touch-icon.png',
+    'favicon.ico',
+    'favicon.svg',
+    'favicon-48x48.png',
+    'MonaspaceNeon-Bold.woff2',
+    'site.webmanifest',
+    'style.css',
+    'web-app-manifest-192x192.png' +
+    'web-app-manifest-512x512.png'
+];
+publicFilesToShare.forEach(file => {
+    app.get('/' + file, (req, res) => {
+        res.sendFile(__dirname + '/public/' + file);
+    });
+});
+
 app.get('/', (req, res) => { res.sendFile(__dirname + '/public/index.html'); });
 
 io.on('connection', (socket) => {
-    const ipAddress = isProductionEnv() ? extractIpAddress(socket) : 'local';
+    const ipAddress = isProductionEnv() ? extractIpAddress(socket) : 'Local';
     socket.join(ipAddress);
     const device = getDeviceName(socket.request.headers['user-agent']);
     socket.device = device;

@@ -2,27 +2,33 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/style.css">
-    <title>paste.it - share files between devices</title>
+    <title>Paste.it - Share files between devices</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Paste.it" />
+    <link rel="manifest" href="/site.webmanifest" />
 </head>
 <body>
     <div id="drag-drop">
         <span>Drop your file here</span>
     </div>
     <main>
-        <img id="logo" src="/logo.svg" alt="Logo">
+        <a id="logo" href="https://ilies.ch" target="_blank" rel="noreferrer nofollow">
+            <img src="/favicon.svg" alt="About me">
+        </a>
         <div id="network">
             <div>
-                <span>your network is:</span>
+                <span>Your network:</span>
                 <span id="room-address">Loading...</span>
             </div>
             <div>
-                <h3>connected:</h3>
+                <h3>Connected:</h3>
                 <ul id="connected"></ul>
             </div>
         </div>
-        <div class="hr"></div>
         <div id="contents">
             <ul></ul>
         </div>
@@ -32,12 +38,9 @@
                 <button onclick="handleSubmitText">Share text</button>
                 <h3>Or</h3>
                 <input id="input-file" type="file" onchange="upload(this.files)" hidden/>
-                <label for="input-file" class="button">+ upload file</label>
+                <label for="input-file" class="button">+ Upload file</label>
             </form>
         </div>
-        <footer>
-
-        </footer>
     </main>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -68,23 +71,23 @@
         });
         form.addEventListener('submit', (e) => handleSubmitText(e));
 
-        socket.on('newText', function(text) {
+        socket.on('newText', (text) => {
             const textDom = getTextDOM(text);
             contents.appendChild(textDom);
         });
-        socket.on('newFile', function(file) {
+        socket.on('newFile', (file) => {
             const fileDOM = getFileDOM(file);
             contents.appendChild(fileDOM);
         });
-        socket.on('connected', function(roomData) {
+        socket.on('connected', (roomData) => {
             addConnected(roomData.usersInRoom);
             addContents(roomData.sharedContents);
             addIpAddress(roomData.room);
         });
-        socket.on('deleteContent', function(id) {
+        socket.on('deleteContent', (id) => {
             removeContent(id);
         });
-        socket.on('disconnected', function(socketId) {
+        socket.on('disconnected', (socketId) => {
             const item = document.querySelector(`li#${getIdName(socketId)}`);
             if (item) {
                 item.remove();
@@ -159,13 +162,13 @@
 
             const buttons = document.createElement('div');
             const copyButton = document.createElement('button');
-            copyButton.className = 'alt-button';
+            copyButton.className = 'button alt-button';
             copyButton.textContent = 'Copy';
             copyButton.addEventListener('click', () => {
                 copyToClipboard(text.content);
             });
             const deleteButton = document.createElement('button');
-            deleteButton.className = 'alt-button';
+            deleteButton.className = 'button alt-button';
             deleteButton.textContent = 'x';
             deleteButton.addEventListener('click', () => {
                 socket.emit('delete', text.id);
@@ -190,12 +193,12 @@
             const buttons = document.createElement('div');
             const downloadButton = document.createElement('a');
             downloadButton.className = 'button alt-button';
-            downloadButton.textContent = 'download';
+            downloadButton.textContent = 'Download';
             downloadButton.download = file.name;
             downloadButton.href = b64;
             downloadButton.target = '_blank';
             const deleteButton = document.createElement('button');
-            deleteButton.className = 'alt-button';
+            deleteButton.className = 'button alt-button';
             deleteButton.textContent = 'x';
             deleteButton.addEventListener('click', () => {
                 socket.emit('delete', file.id);
