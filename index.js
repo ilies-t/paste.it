@@ -39,8 +39,8 @@ io.on('connection', (socket) => {
     };
     io.to(ipAddress).emit('connected', data);
 
-    socket.on('message', (msg) => {
-        console.log(`[${device}] message: ${msg}`);
+    socket.on('sendText', (msg) => {
+        console.log(`[${device}] sendText: ${msg}`);
         const messageToAdd = {
             id: randomUUID(),
             content: msg,
@@ -51,11 +51,11 @@ io.on('connection', (socket) => {
         };
 
         Database.addText(ipAddress, messageToAdd);
-        const texts = Database.get(ipAddress).texts;
-        io.to(ipAddress).emit('message', texts);
+        io.to(ipAddress).emit('newText', messageToAdd);
     });
 
-    socket.on("upload", (file) => {
+    socket.on("sendFile", (file) => {
+        console.log(`[${device}] sendFile: ${file.name} `);
         const base64 = Buffer.from(file.content).toString('base64');
         const fileToAdd = {
             id: randomUUID(),
@@ -68,8 +68,7 @@ io.on('connection', (socket) => {
             base64,
         };
         Database.addFile(ipAddress, fileToAdd);
-        const files = Database.get(ipAddress).files;
-        io.to(ipAddress).emit("refreshFiles", files);
+        io.to(ipAddress).emit("newFile", fileToAdd);
     });
 
     socket.on('delete', (id) => {
