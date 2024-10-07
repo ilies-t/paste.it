@@ -241,6 +241,7 @@ input {
     height: 100%;
     background-color: color-mix(in srgb, var(--black) 95%, transparent);
     visibility: hidden;
+    z-index: 1;
 
     > span {
         color: var(--white);
